@@ -69,6 +69,9 @@
         {% if user.is_authenticated %}
         <center><h2><a href="/">{{ user.username|capfirst }}</a></h2></center>
         {% endif %}
+        <a href="{% url 'home' %}">
+        <img src="{% static 'fitcypher-logo.jpg' %}" width="100%" style="border-radius: 10px;">
+        </a>
         {% if user.is_authenticated %}
         user.is_authenticated
         {% if user.is_staff or user.is_superuser %}
