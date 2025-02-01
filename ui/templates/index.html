@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% load static %} 
+
+{% block style %}
+.button-link {
+    background-color: #28a745; /* Green background */
+    color: white; /* White text */
+    font-size: 20px; /* Large font size */
+    padding: 15px 30px; /* Padding for a large button */
+    text-decoration: none; /* Remove underline */
+    border-radius: 8px; /* Rounded corners */
+    text-align: center; /* Center the text */
+    display: inline-block; /* Ensure it behaves like a button */
+    transition: background-color 0.3s ease; /* Smooth transition for hover effect */
+    margin-bottom: 20px; /* Add space below the button */
+}
+
+.button-link:hover {
+    background-color: #218838; /* Darker green on hover */
+}
+{% endblock %}
+
+
+
+{% block title %}Welcome - Beach Brains Academy{% endblock %}
+
+{% block content %}
+<div style="text-align: center;">
+    {% if user.is_authenticated %}
+        <h2>Hello {{ user.username|capfirst }}! Thank you for logging in.</h2>
+    {% else %}
+    <h1>Welcome to Beach Brains Academy!</h1>
+    <p>Please <a href="{% url 'auth_login' %}">login</a> or <a href="{% url 'registration_register' %}">register</a> to get started.</p>
+    {% endif %}
+    <center>
+    </center>
+</div>
+{% endblock %}

@@ -1,0 +1,95 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Your Site{% endblock %}</title>
+    <!-- Add your CSS here -->
+    {% block head %}
+    {% endblock %}
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            display: flex;
+            min-height: 100vh;
+        }
+        .sidebar {
+            width: 150px;
+            background-color: #f4f4f4;
+            padding: 5px;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+        }
+        .sidebar h2 {
+            margin-top: 0px;
+            margin-bottom: 0px;
+        }
+        .sidebar a {
+            display: block;
+            padding: 0px 10px;
+            margin-bottom: 5px;
+            text-decoration: none;
+            color: #333;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+        .sidebar a:hover {
+            background-color: #ddd;
+        }
+        .sidebar .user-info {
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        .content {
+            flex: 1;
+            padding: 10px;
+        }
+        .messages {
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+        }
+        .messages .success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .messages .error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        {% block style %}
+        {% endblock %}        
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        {% if user.is_authenticated %}
+        <center><h2><a href="/">{{ user.username|capfirst }}</a></h2></center>
+        {% endif %}
+        {% if user.is_authenticated %}
+        user.is_authenticated
+        {% if user.is_staff or user.is_superuser %}
+        <a href="{% url 'admin:index' %}">Admin</a>
+        {% endif %}
+        <a href="#" onclick="document.getElementById('logout-form').submit();">Logout</a>
+        <!-- The form will be submitted via JavaScript -->
+        <form id="logout-form" action="{% url 'auth_logout' %}" method="POST" style="display:none;">
+            {% csrf_token %}
+        </form>
+        {% else %}
+            <a href="{% url 'auth_login' %}">Login</a>
+            <a href="{% url 'registration_register' %}">Register</a>
+        {% endif %}
+    </div>
+
+    <div class="content">
+        <main>
+            {% block content %}
+            {% endblock %}
+        </main>
+    </div>
+</body>
+</html>
