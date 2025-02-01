@@ -87,8 +87,14 @@ if config('DATABASE_URL', default=''):
     # Use PostgreSQL if DATABASE_URL is set (e.g., in production)
     import dj_database_url
     DATABASES = {
-        'default': dj_database_url.config(default=config('DATABASE_URL'))
+        'default': dj_database_url.config(default=config('DATABASE_URL')),
     }
+
+    if 'mysql' in DATABASES['default']['ENGINE']:
+        DATABASES['default']['OPTIONS'] = {
+            'sql_mode': 'STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO',
+        }
+
     print('DATABASE_URL:', config('DATABASE_URL'))
 else:
     # Use SQLite for local development
