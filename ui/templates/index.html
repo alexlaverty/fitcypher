@@ -23,14 +23,14 @@
 
 
 
-{% block title %}Welcome - Beach Brains Academy{% endblock %}
+{% block title %}Home - FitCypher{% endblock %}
 
 {% block content %}
 <div style="text-align: center;">
     {% if user.is_authenticated %}
         <h2>Hello {{ user.username|capfirst }}! Thank you for logging in.</h2>
     {% else %}
-    <h1>Welcome to Beach Brains Academy!</h1>
+    <h1>Welcome to FitCypher!</h1>
     <p>Please <a href="{% url 'auth_login' %}">login</a> or <a href="{% url 'registration_register' %}">register</a> to get started.</p>
     {% endif %}
     <center>
