@@ -21,13 +21,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-&!8+$8c$=*6s_w(*87kwje01mu8m9l(8@!^fuul&ra60jvlkg#'
+SECRET_KEY = config('SECRET_KEY', default='this_is_insecure')
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = config('DEBUG', default=False, cast=bool)
 
-ALLOWED_HOSTS = ['alexlaverty.pythonanywhere.com','127.0.0.1']
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='', cast=lambda v: v.split(','))
 
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = 'static/'
