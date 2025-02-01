@@ -1,0 +1,73 @@
+# Django
+*.log
+*.pot
+*.pyc
+__pycache__/
+local_settings.py
+db.sqlite3
+media/
+staticfiles/
+
+# Virtual Environment
+venv/
+env/
+.venv/
+ENV/
+.env/
+
+# IDE/Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Node.js (if using frontend tools like Webpack)
+node_modules/
+npm-debug.log*
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+
+# Database migrations (optional, depending on your workflow)
+# migrations/
+
+# Environment variables
+.env
+.env.local
+.env.dev
+.env.prod
+env/
+
+# PyCharm
+.idea/
+
+# VS Code
+.vscode/
+
+# Coverage reports
+.coverage
+htmlcov/
+
+# Testing
+.pytest_cache/
+
+# Celery
+celerybeat-schedule
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+
+# PyInstaller
+build/
+dist/
+*.spec
+
+# Pycharm
+.idea/
+*.iml
+
+# VS Code
+.vscode/
