@@ -2,55 +2,120 @@
 {% load static %}
 
 {% block style %}
+/* Main container takes 80% of the screen width */
 .workout-cards {
-    padding: 20px;
-    max-width: 800px;
-    margin: 0 auto;
+    width: 80%;
+    max-width: 1200px; /* Optional: Limit maximum width */
+    margin: 0 auto; /* Center the container */
+    <!-- padding: 20px; -->
+    box-sizing: border-box;
 }
+
+.video-info {
+    display: flex; /* Use flexbox for layout */
+    justify-content: space-between; /* Space between left and right items */
+    align-items: center; /* Vertically center items */
+    margin-bottom: 20px; /* Space between info and video */
+}
+
 .exercise-title {
     font-size: 24px;
-    margin: 20px 0;
+    margin: 0; /* Remove default margin */
+    display: inline-block; /* Ensure it stays inline */
 }
+
 .counter {
     font-size: 18px;
-    margin: 10px 0;
+    margin: 0; /* Remove default margin */
+    display: inline-block; /* Ensure it stays inline */
 }
-.complete-btn {
+
+/* Video container */
+.video-container {
+    width: 100%;
+    aspect-ratio: 16 / 9; /* Maintain 16:9 aspect ratio */
+    margin-bottom: 20px; /* Space between video and buttons */
+}
+
+/* YouTube player */
+#player {
+    width: 100%;
+    height: 100%;
+}
+
+/* Button container */
+.button-container {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px; /* Space between buttons */
+}
+
+/* Buttons */
+.complete-btn,
+.skip-btn {
     padding: 10px 20px;
-    background-color: #4CAF50;
     color: white;
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    margin-top: 20px;
+    flex: 1; /* Buttons take equal space */
+    box-sizing: border-box;
 }
+
+.complete-btn {
+    background-color: #4CAF50;
+}
+
 .complete-btn:hover {
     background-color: #45a049;
 }
+
 .skip-btn {
-    padding: 10px 20px;
     background-color: #ff9800; /* orange color */
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    margin-top: 20px;
 }
 
 .skip-btn:hover {
     background-color: #e68a00; /* darker orange color */
+}
+
+/* Stack buttons vertically on small screens */
+@media (max-width: 600px) {
+    .button-container {
+        flex-direction: column;
+    }
+
+    .complete-btn,
+    .skip-btn {
+        width: 100%;
+    }
+}
+/* Hide the sidebar on mobile devices */
+@media only screen and (max-width: 845px) {
+  .sidebar {
+    display: none;
+  }
+  .workout-cards {
+    width: 50%;
+  }
 }
 {% endblock %}
 
 {% block content %}
 <div class="workout-cards">
     {% if youtube_channel %}
-        <h1>{{ youtube_channel|title }} Workout</h1>
-        <div id="exerciseContainer">
-            <div class="counter">Exercise: <span id="currentCount">1</span> of <span id="totalCount">0</span></div>
+        <!-- Video info (name and elapsed time) -->
+        <div class="video-info">
             <div class="exercise-title" id="exerciseTitle"></div>
-            <div class="counter">Time Elapsed: <span id="timeElapsed">0 seconds</span></div>
+            <div class="counter">Elapsed Time: <span id="timeElapsed">0 seconds</span></div>
+        </div>
+
+        <!-- Video container -->
+        <div class="video-container">
             <div id="player"></div>
+        </div>
+
+        <!-- Buttons container -->
+        <div class="button-container">
             <button class="complete-btn" id="completeBtn">Complete Exercise</button>
             <button class="skip-btn" id="skipBtn">Skip Exercise</button>
         </div>
@@ -83,7 +148,7 @@ function initializeYouTubePlayer() {
     if (!videos.length) return;
     
     // Update exercise count
-    document.getElementById('totalCount').textContent = videos.length;
+    // document.getElementById('totalCount').textContent = videos.length;
     
     // Load YouTube IFrame API
     if (!window.YT) {
@@ -102,26 +167,25 @@ function onYouTubeIframeAPIReady() {
 
 function createPlayer() {
     if (!videos.length) return;
-    
+
     player = new YT.Player('player', {
-        height: '360',
-        width: '640',
+        height: '100%', // Let CSS handle the height
+        width: '100%',  // Let CSS handle the width
         videoId: videos[currentIndex].id,
         playerVars: {
             'autoplay': 1,  // Enable autoplay
             'mute': 1,      // Mute the video
             'controls': 1,
-            'loop': 1,          // Enable looping
+            'loop': 1,      // Enable looping
             'playlist': videos[currentIndex].id // Add the video ID as the playlist
         },
         events: {
             'onReady': onPlayerReady
         }
     });
-    
+
     updateExerciseTitle();
     startTimer();
-
 }
 
 function onPlayerReady(event) {
@@ -131,7 +195,7 @@ function onPlayerReady(event) {
 
 function updateExerciseTitle() {
     document.getElementById('exerciseTitle').textContent = videos[currentIndex].title;
-    document.getElementById('currentCount').textContent = currentIndex + 1;
+    //document.getElementById('currentCount').textContent = currentIndex + 1;
 }
 
 function loadNextVideo() {
