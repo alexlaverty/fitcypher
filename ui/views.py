@@ -114,6 +114,13 @@ def workout_selection(request):
             "description": "A simple bodyweight workout for a fast and effective session.",
             "view_name": "body_weight_exercises",
             "image_url": "static/workouts/body_weight_workout.jpg"
+        },
+        {
+            "title": "DareBee Workout",
+            "description": "Workout to DareBee Youtube Video Library",
+            "view_name": "youtube",
+            "youtube_channel": "darebee",
+            "image_url": "static/workouts/darebee-logo.jpg"
         }
     ]
     return render(request, "workouts.html", {"workouts": workouts})
@@ -167,3 +174,7 @@ def body_weight_exercises(request):
             return redirect('body_weight_exercises')  # Refresh the page after adding an entry
 
     return render(request, 'body_weight_exercises.html', {'exercise_data': exercise_data})
+
+def youtube(request):
+    youtube_channel = request.GET.get('youtube_channel', '')  # Gets the parameter from URL, empty string as default
+    return render(request, 'youtube.html', {'youtube_channel': youtube_channel})

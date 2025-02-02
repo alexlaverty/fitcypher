@@ -3,24 +3,36 @@
 .card {
     max-width: 250px;
     padding: 10px;
+    box-sizing: border-box;
     .h2, h2 {
         font-size: 1.5rem;
     }
 }
+
 .workout-cards {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px; /* Optional, adds space between cards */
     padding: 20px;
 }
 
 {% endblock %}
+
 {% block content %}
-    <h1>Choose Your Workout</h1>
-    <div class="workout-cards">
-        {% for workout in workouts %}
-            <div class="card">
-                <img src="{{ workout.image_url }}" alt="{{ workout.title }}" style="width: 100%; display: block; margin: 0;">
-                <h2><a href="{% url workout.view_name %}">{{ workout.title }}</a></h2>
-                <p>{{ workout.description }}</p>
-            </div>
-        {% endfor %}
-    </div>
+<h1>Choose Your Workout</h1>
+<div class="workout-cards">
+    {% for workout in workouts %}
+        <div class="card">
+            <img src="{{ workout.image_url }}" alt="{{ workout.title }}" style="width: 100%; display: block; margin: 0;">
+            <h2>
+                {% if workout.view_name == 'youtube' and workout.youtube_channel %}
+                    <a href="{% url workout.view_name %}?youtube_channel={{ workout.youtube_channel }}">{{ workout.title }}</a>
+                {% else %}
+                    <a href="{% url workout.view_name %}">{{ workout.title }}</a>
+                {% endif %}
+            </h2>
+            <p>{{ workout.description }}</p>
+        </div>
+    {% endfor %}
+</div>
 {% endblock %}
