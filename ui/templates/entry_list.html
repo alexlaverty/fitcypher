@@ -24,6 +24,9 @@
         display: flex;
         flex-wrap: wrap;
     }
+    .card-text {
+        margin-bottom: 0px;
+    }
 </style>
 {% endblock %}
 
@@ -51,7 +54,7 @@
                                 {% if entry.tags %}
                                     Tags: {{ entry.tags }}<br>
                                 {% endif %}
-                                Source: {{ entry.source }}
+                                <!-- Source: {{ entry.source }} -->
                             </p>
                             <small class="text-muted">{{ entry.date|date:"H:i" }}</small>
                         </div>

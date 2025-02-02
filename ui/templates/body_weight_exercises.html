@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Body Weight Exercises - FitCypher{% endblock %}
+
+{% block style %}
+.exercise-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px; /* Space between cards */
+    margin-top: 30px;
+    justify-content: left; 
+}
+
+.exercise-card {
+    background-color: #f8f9fa; /* Light gray background */
+    border: 1px solid #ddd; /* Light border */
+    border-radius: 10px; /* Rounded corners */
+    padding: 20px;
+    text-align: center;
+    max-width: 200px; /* Max width for each card */
+    flex: 1 1 200px; /* Allow cards to grow and shrink */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Smooth hover effect */
+    cursor: pointer; /* Pointer cursor on hover */
+}
+
+.exercise-card:hover {
+    transform: translateY(-5px); /* Lift card on hover */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Stronger shadow on hover */
+}
+
+.exercise-card h3 {
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+    color: #333; /* Dark text color */
+}
+
+.exercise-card p {
+    font-size: 1rem;
+    color: #555; /* Slightly lighter text color */
+}
+{% endblock %}
+
+{% block content %}
+<div style="text-align: center;">
+    <h1>Body Weight Exercises</h1>
+    <p>Click on an exercise to log an entry for today.</p>
+
+    <!-- Exercise Cards -->
+    <div class="exercise-container">
+        {% for exercise in exercise_data %}
+            <form method="POST" action="{% url 'body_weight_exercises' %}" class="exercise-card" id="form-{{ forloop.counter }}">
+                {% csrf_token %}
+                <input type="hidden" name="exercise_name" value="{{ exercise.name }}">
+                <h3>{{ exercise.name }}</h3>
+                <p>Entries Today:</p>
+                <span style="font-size: 1.2rem;">{{ exercise.entry_count }}</span>
+                <button type="submit" style="display: none;"></button> <!-- Hidden submit button -->
+            </form>
+            <script>
+                // Add click event listener to the form
+                document.getElementById('form-{{ forloop.counter }}').addEventListener('click', function() {
+                    this.submit(); // Submit the form when the card is clicked
+                });
+            </script>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

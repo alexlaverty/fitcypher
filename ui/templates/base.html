@@ -20,7 +20,7 @@
         }
         .sidebar {
             width: 150px;
-            background-color: #f4f4f4;
+            background-color: #f7f8fa;
             padding: 5px;
             box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
         }
@@ -75,6 +75,7 @@
         </a>
         {% if user.is_authenticated %}
         <a href="{% url 'entry_list' %}">Entries</a>
+        <a href="{% url 'workout_selection' %}">Workouts</a>
         {% if user.is_staff or user.is_superuser %}
         <a href="{% url 'admin:index' %}">Admin</a>
         {% endif %}
@@ -87,6 +88,7 @@
             <a href="{% url 'auth_login' %}">Login</a>
             <a href="{% url 'registration_register' %}">Register</a>
         {% endif %}
+        <a href="https://alexlaverty.github.io/categories/fitcypher/" target="_blank">Blog</a>
     </div>
 
     <div class="content">

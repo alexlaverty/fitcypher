@@ -184,3 +184,20 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticated',  # Require authentication for all views
     ],
 }
+
+if DEBUG:
+    LOGGING = {
+        'version': 1,
+        'disable_existing_loggers': False,
+        'handlers': {
+            'console': {
+                'class': 'logging.StreamHandler',
+            },
+        },
+        'loggers': {
+            '': {  # Root logger
+                'handlers': ['console'],
+                'level': 'DEBUG',
+            },
+        },
+    }
