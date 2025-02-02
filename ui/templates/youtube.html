@@ -1,10 +1,159 @@
 {% extends "base.html" %}
+{% load static %}
+
 {% block style %}
 .workout-cards {
     padding: 20px;
+    max-width: 800px;
+    margin: 0 auto;
+}
+.exercise-title {
+    font-size: 24px;
+    margin: 20px 0;
+}
+.counter {
+    font-size: 18px;
+    margin: 10px 0;
+}
+.complete-btn {
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 20px;
+}
+.complete-btn:hover {
+    background-color: #45a049;
 }
 {% endblock %}
+
 {% block content %}
-    <h1>Youtube</h1>
-    youtube_channel: {{ youtube_channel }}
+<div class="workout-cards">
+    {% if youtube_channel %}
+        <h1>{{ youtube_channel|title }} Workout</h1>
+        <div id="exerciseContainer">
+            <div class="counter">Exercise: <span id="currentCount">1</span> of <span id="totalCount">0</span></div>
+            <div class="exercise-title" id="exerciseTitle"></div>
+            <div id="player"></div>
+            <button class="complete-btn" id="completeBtn">Complete Exercise</button>
+        </div>
+    {% else %}
+        <h1>Please specify a YouTube channel</h1>
+    {% endif %}
+</div>
+
+<script>
+let videos = {{ videos|safe }};
+let currentIndex = 0;
+let player;
+
+function initializeYouTubePlayer() {
+    if (!videos.length) return;
+    
+    // Update exercise count
+    document.getElementById('totalCount').textContent = videos.length;
+    
+    // Load YouTube IFrame API
+    if (!window.YT) {
+        const tag = document.createElement('script');
+        tag.src = "https://www.youtube.com/iframe_api";
+        const firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+    } else {
+        createPlayer();
+    }
+}
+
+function onYouTubeIframeAPIReady() {
+    createPlayer();
+}
+
+function createPlayer() {
+    if (!videos.length) return;
+    
+    player = new YT.Player('player', {
+        height: '360',
+        width: '640',
+        videoId: videos[currentIndex].id,
+        playerVars: {
+            'autoplay': 1,  // Enable autoplay
+            'mute': 1,      // Mute the video
+            'controls': 1,
+            'loop': 1,          // Enable looping
+            'playlist': videos[currentIndex].id // Add the video ID as the playlist
+        },
+        events: {
+            'onReady': onPlayerReady
+        }
+    });
+    
+    updateExerciseTitle();
+}
+
+function onPlayerReady(event) {
+    // Make sure video starts playing when loaded
+    event.target.playVideo();
+}
+
+function updateExerciseTitle() {
+    document.getElementById('exerciseTitle').textContent = videos[currentIndex].title;
+    document.getElementById('currentCount').textContent = currentIndex + 1;
+}
+
+function loadNextVideo() {
+    if (currentIndex < videos.length - 1) {
+        currentIndex++;
+        player.loadVideoById(videos[currentIndex].id);
+        updateExerciseTitle();
+    } else {
+        alert('Workout complete! Great job!');
+        // Optionally redirect to a summary page or reload with new exercises
+    }
+}
+
+document.getElementById('completeBtn').addEventListener('click', function() {
+    const video = videos[currentIndex];
+    
+    // Send completion to server
+    fetch('', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: new URLSearchParams({
+            'video_id': video.id,
+            'video_title': video.title,
+            'video_duration': video.duration
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            loadNextVideo();
+        }
+    });
+});
+
+// Helper function to get CSRF token
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+// Initialize on page load
+initializeYouTubePlayer();
+</script>
 {% endblock %}

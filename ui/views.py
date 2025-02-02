@@ -1,11 +1,17 @@
+import logging
+import os 
 from collections import defaultdict
 from core.models import Entry
 from datetime import datetime
+from django.conf import settings
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.db.models import Count, Sum
 from django.shortcuts import render, redirect
 from django.utils import timezone
-import logging
+import json
+import random 
+from django.http import JsonResponse
 
 # Set up logging
 logger = logging.getLogger(__name__)
@@ -175,6 +181,43 @@ def body_weight_exercises(request):
 
     return render(request, 'body_weight_exercises.html', {'exercise_data': exercise_data})
 
+@login_required
 def youtube(request):
-    youtube_channel = request.GET.get('youtube_channel', '')  # Gets the parameter from URL, empty string as default
-    return render(request, 'youtube.html', {'youtube_channel': youtube_channel})
+    youtube_channel = request.GET.get('youtube_channel', '')
+    
+    if request.method == 'POST':
+        video_id = request.POST.get('video_id')
+        video_title = request.POST.get('video_title')
+        video_duration = request.POST.get('video_duration')
+        
+        # Create entry for completed exercise
+        Entry.objects.create(
+            user=request.user,
+            date=timezone.now(),
+            tracking='exercise',
+            string_value=video_title,
+            numerical_value=video_duration,
+            source='youtube',
+            tags=youtube_channel,
+            notes=f'Video ID: {video_id}'
+        )
+        return JsonResponse({'status': 'success'})
+    
+    videos = []
+    if youtube_channel:
+        APP_DIR = os.path.dirname(os.path.abspath(__file__))
+        json_path = os.path.join(APP_DIR, 'data', f'{youtube_channel}.json')
+        print(f"json_path: {json_path}")
+        if os.path.exists(json_path):
+            with open(json_path, 'r') as file:
+                videos = json.load(file)
+                print("videos")
+                print(videos)
+                random.shuffle(videos)
+        else:
+            print(f"Can't find JSON File : {json_path}")
+    
+    return render(request, 'youtube.html', {
+        'youtube_channel': youtube_channel,
+        'videos': json.dumps(videos) if videos else '[]'
+    })
