@@ -17,3 +17,10 @@ Password: admin
 Password (again): admin
 Superuser created successfully.
 ```
+
+## Run FitCypher in Docker container
+
+```
+docker build -t fitcypher .
+docker run -p 8000:8000 fitcypher
+```
