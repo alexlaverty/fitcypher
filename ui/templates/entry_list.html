@@ -4,11 +4,10 @@
 {% block title %}Your Entries - FitCypher{% endblock %}
 
 {% block head %}
-<!-- Bootstrap CSS -->
 <style>
     .card {
-        margin: 10px;
-        flex: 1 1 calc(33.333% - 20px); /* Three cards per row with margin */
+        margin: 5px;
+        flex: 1 1 calc(33.333% - 20px);
         box-sizing: border-box;
         max-width: 200px;
     }
@@ -24,39 +23,60 @@
         display: flex;
         flex-wrap: wrap;
     }
-    .card-text {
-        margin-bottom: 0px;
+    .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 5px;
+        background-color: lightslategrey;
+        border-bottom: none;
+        
+    }
+    .card-body {
+        padding: 0;
+        text-align: center;
+    }
+    .entry-value {
+        margin: 0.2rem 0;
+        font-size: 0.8rem;
+    }
+    .time {
+        color: #ffffff;
+        font-size: 0.875rem;
+    }
+    .tracking {
+        color: #ffffff;
+        font-size: 0.875rem;
     }
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="container mt-4">
-    <h1>Your Entries</h1>
+    <!-- <h1>Your Entries</h1> -->
     {% for day, entries in grouped_entries %}
         <div class="day-group">
             <div class="day-header">{{ day }}</div>
             <div class="card-container">
                 {% for entry in entries %}
                     <div class="card">
+                        <div class="card-header">
+                            <span class="time">{{ entry.date|date:"H:i" }}</span>
+                            <span class="tracking">{{ entry.tracking }}</span>
+                        </div>
                         <div class="card-body">
-                            <h5 class="card-title">{{ entry.tracking }}</h5>
-                            <p class="card-text">
-                                {% if entry.string_value %}
-                                    {{ entry.string_value }}<br>
-                                {% endif %}
-                                {% if entry.numerical_value %}
-                                    {{ entry.numerical_value }}<br>
-                                {% endif %}
-                                {% if entry.notes %}
-                                    Notes: {{ entry.notes }}<br>
-                                {% endif %}
-                                {% if entry.tags %}
-                                    Tags: {{ entry.tags }}<br>
-                                {% endif %}
-                                <!-- Source: {{ entry.source }} -->
-                            </p>
-                            <small class="text-muted">{{ entry.date|date:"H:i" }}</small>
+                            {% if entry.string_value %}
+                                <div class="entry-value">{{ entry.string_value }}</div>
+                            {% endif %}
+                            {% if entry.numerical_value %}
+                                <div class="entry-value">{{ entry.numerical_value }}</div>
+                            {% endif %}
+                            {% if entry.notes %}
+                                <div class="entry-value">{{ entry.notes }}</div>
+                            {% endif %}
+                            {% if entry.tags %}
+                                <div class="entry-value">{{ entry.tags }}</div>
+                            {% endif %}
                         </div>
                     </div>
                 {% endfor %}
