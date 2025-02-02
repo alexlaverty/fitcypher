@@ -24,3 +24,19 @@ Superuser created successfully.
 docker build -t fitcypher .
 docker run -p 8000:8000 fitcypher
 ```
+
+## REST API 
+
+```
+curl -X POST http://127.0.0.1:8000/api/entries/ \
+-H "Content-Type: application/json" \
+-u your_username:your_password \
+-d '{
+    "date": "2023-10-15T12:00:00Z",
+    "tracking": "weight",
+    "numerical_value": 70.5,
+    "notes": "After breakfast",
+    "tags": "morning",
+    "source": "fitcypher"
+}'
+```

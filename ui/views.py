@@ -174,7 +174,7 @@ def body_weight_exercises(request):
                 date=timezone.now(),
                 tracking="exercise",
                 string_value=exercise_name.lower(),
-                numerical_value=1,
+                numerical_value=10, # Hard coded to 10 for now...
                 source="fitcypher"
             )
             return redirect('body_weight_exercises')  # Refresh the page after adding an entry
@@ -221,3 +221,32 @@ def youtube(request):
         'youtube_channel': youtube_channel,
         'videos': json.dumps(videos) if videos else '[]'
     })
+
+@login_required
+def entry_charts(request):
+    # Get the logged-in user's entries
+    entries = Entry.objects.filter(user=request.user)
+
+    # Group entries by tracking and date, and count the number of entries per day
+    data = {}
+    for entry in entries:
+        tracking = entry.tracking
+        date = entry.date.date()
+        if tracking not in data:
+            data[tracking] = {}
+        if date not in data[tracking]:
+            data[tracking][date] = 0
+        data[tracking][date] += 1
+
+    # Prepare the data for the template
+    charts_data = []
+    for tracking, dates in data.items():
+        labels = sorted(dates.keys())
+        counts = [dates[date] for date in labels]
+        charts_data.append({
+            'tracking': tracking,
+            'labels': [label.strftime('%Y-%m-%d') for label in labels],
+            'counts': counts,
+        })
+
+    return render(request, 'entry_charts.html', {'charts_data': charts_data})
