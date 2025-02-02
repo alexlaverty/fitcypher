@@ -23,9 +23,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = config('SECRET_KEY', default='this_is_insecure')
 
+# Get DEBUG value from the config file with a default value
 DEBUG = config('DEBUG', default=False, cast=bool)
 
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='', cast=lambda v: v.split(','))
+# Override DEBUG value with the environment variable if it's set
+env_debug = os.getenv('DJANGO_DEBUG')
+if env_debug is not None:
+    DEBUG = env_debug == 'True'
+
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='*', cast=lambda v: v.split(','))
 
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = 'static/'

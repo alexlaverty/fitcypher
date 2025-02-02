@@ -1,0 +1,35 @@
+# Ignore the virtual environment directory
+env/
+
+# Ignore the local SQLite database
+db.sqlite3
+
+# Ignore Git files
+.git/
+.github/
+
+# Ignore media and static files (if they are handled separately or dynamically generated)
+# media/
+# static/
+
+# Ignore environment-specific files
+.env
+
+# Ignore IDE and editor-specific files
+.vscode/
+.idea/
+
+# Ignore Python cache files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Ignore macOS-specific files
+.DS_Store
+
+# Ignore README and other documentation files (optional)
+README.md
+
+# Ignore Dockerfile and requirements.txt (if already copied or handled separately)
+Dockerfile
