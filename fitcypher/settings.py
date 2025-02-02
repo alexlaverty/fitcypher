@@ -175,3 +175,12 @@ LOGIN_URL = '/accounts/login/'
 #SESSION_ENGINE = 'fitcypher.session_backend'
 SESSION_SAVE_EVERY_REQUEST = True
 
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.BasicAuthentication',  # Enable basic authentication
+        'rest_framework.authentication.SessionAuthentication',  # Optional, for session-based access
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',  # Require authentication for all views
+    ],
+}

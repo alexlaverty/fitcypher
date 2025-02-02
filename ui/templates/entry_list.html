@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Your Entries - FitCypher{% endblock %}
+
+{% block head %}
+<!-- Bootstrap CSS -->
+<style>
+    .card {
+        margin: 10px;
+        flex: 1 1 calc(33.333% - 20px); /* Three cards per row with margin */
+        box-sizing: border-box;
+        max-width: 200px;
+    }
+    .day-group {
+        margin-bottom: 30px;
+    }
+    .day-header {
+        font-size: 1.5rem;
+        font-weight: bold;
+        margin-bottom: 15px;
+    }
+    .card-container {
+        display: flex;
+        flex-wrap: wrap;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>Your Entries</h1>
+    {% for day, entries in grouped_entries %}
+        <div class="day-group">
+            <div class="day-header">{{ day }}</div>
+            <div class="card-container">
+                {% for entry in entries %}
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ entry.tracking }}</h5>
+                            <p class="card-text">
+                                {% if entry.string_value %}
+                                    {{ entry.string_value }}<br>
+                                {% endif %}
+                                {% if entry.numerical_value %}
+                                    {{ entry.numerical_value }}<br>
+                                {% endif %}
+                                {% if entry.notes %}
+                                    Notes: {{ entry.notes }}<br>
+                                {% endif %}
+                                {% if entry.tags %}
+                                    Tags: {{ entry.tags }}<br>
+                                {% endif %}
+                                Source: {{ entry.source }}
+                            </p>
+                            <small class="text-muted">{{ entry.date|date:"H:i" }}</small>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}
