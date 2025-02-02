@@ -45,7 +45,7 @@
 {% block content %}
 <div style="text-align: center;">
     <h1>Body Weight Exercises</h1>
-    <p>Click on an exercise to log an entry for today.</p>
+    <p>Complete a set of 10 reps and then click the exercise to log an entry for today.</p>
 
     <!-- Exercise Cards -->
     <div class="exercise-container">
@@ -54,6 +54,7 @@
                 {% csrf_token %}
                 <input type="hidden" name="exercise_name" value="{{ exercise.name }}">
                 <h3>{{ exercise.name }}</h3>
+                <span style="font-size: 1.2rem;">x10</span>
                 <p>Entries Today:</p>
                 <span style="font-size: 1.2rem;">{{ exercise.entry_count }}</span>
                 <button type="submit" style="display: none;"></button> <!-- Hidden submit button -->
