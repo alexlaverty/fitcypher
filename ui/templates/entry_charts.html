@@ -3,85 +3,47 @@
 
 {% block head %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
 {% endblock %}
 
 {% block style %}
-
-.chart-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr); /* Fixed 3 columns */
-    gap: 20px;
-    padding: 20px;
-    justify-items: stretch;
-}
-
-.chart-card {
-    background-color: #fff;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    padding: 15px;
-    display: flex; /* Allows flexible sizing of cards */
-    flex-direction: column; /* Keeps the title and chart container stacked inside the card */
-}
-
 .chart-container {
     width: 100%;
-    height: 200px; /* Adjust chart height as needed */
+    height: 400px; /* Adjust chart height as needed */
 }
-
-h3 {
-    margin-top: 0;
-}
-
-
 {% endblock %}
 
 {% block content %}
-<h1>Your Entries</h1>
-<div class="chart-grid">
-    {% for chart in charts_data %}
-    <div class="chart-card">
-        <h3>{{ chart.tracking }}</h3>
-        <div class="chart-container">
-            <canvas id="chart-{{ forloop.counter }}"></canvas>
-        </div>
-    </div>
-    {% endfor %}
+<h1>Your Exercise Entries</h1>
+<div class="chart-container">
+    <canvas id="exercise-chart"></canvas>
 </div>
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-        {% for chart in charts_data %}
-        var ctx = document.getElementById('chart-{{ forloop.counter }}').getContext('2d');
+        var ctx = document.getElementById('exercise-chart').getContext('2d');
         new Chart(ctx, {
             type: 'bar',
-            data: {
-                labels: {{ chart.labels|safe }},
-                datasets: [{
-                    label: 'Entries',
-                    data: {{ chart.counts|safe }},
-                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                    borderColor: 'rgba(75, 192, 192, 1)',
-                    borderWidth: 1
-                }]
-            },
+            data: {{ chart_data|safe }},
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
                 scales: {
+                    x: {
+                        stacked: true,  // Enable stacking for the x-axis
+                    },
                     y: {
+                        stacked: true,  // Enable stacking for the y-axis
                         beginAtZero: true
                     }
                 },
                 plugins: {
                     legend: {
-                        display: false
+                        display: true,  // Show legend to differentiate tags
+                        position: 'top'
                     }
                 }
             }
         });
-        {% endfor %}
     });
 </script>
 {% endblock %}

@@ -127,6 +127,13 @@ def workout_selection(request):
             "view_name": "youtube",
             "youtube_channel": "darebee",
             "image_url": "static/workouts/darebee-logo.jpg"
+        },
+        {
+            "title": "OPEX Mobility",
+            "description": "Workout to OPEX Mobility Youtube Video Library",
+            "view_name": "youtube",
+            "youtube_channel": "opex-mobility",
+            "image_url": "static/workouts/opex-mobility-logo.jpg"
         }
     ]
     return render(request, "workouts.html", {"workouts": workouts})
@@ -175,6 +182,7 @@ def body_weight_exercises(request):
                 tracking="exercise",
                 string_value=exercise_name.lower(),
                 numerical_value=10, # Hard coded to 10 for now...
+                tags="quick",
                 source="fitcypher"
             )
             return redirect('body_weight_exercises')  # Refresh the page after adding an entry
@@ -224,29 +232,32 @@ def youtube(request):
 
 @login_required
 def entry_charts(request):
-    # Get the logged-in user's entries
-    entries = Entry.objects.filter(user=request.user)
+    # Get the logged-in user's exercise entries
+    exercise_entries = Entry.objects.filter(user=request.user, tracking='exercise')
 
-    # Group entries by tracking and date, and count the number of entries per day
+    # Get unique tags
+    tags = set()
+    for entry in exercise_entries:
+        tags.update(entry.tags.split(', '))
+
+    # Group entries by tags and sum the numerical value
     data = {}
-    for entry in entries:
-        tracking = entry.tracking
-        date = entry.date.date()
-        if tracking not in data:
-            data[tracking] = {}
-        if date not in data[tracking]:
-            data[tracking][date] = 0
-        data[tracking][date] += 1
+    for tag in tags:
+        data[tag] = 0
+        for entry in exercise_entries:
+            if tag in entry.tags:
+                data[tag] += float(entry.numerical_value)
 
     # Prepare the data for the template
-    charts_data = []
-    for tracking, dates in data.items():
-        labels = sorted(dates.keys())
-        counts = [dates[date] for date in labels]
-        charts_data.append({
-            'tracking': tracking,
-            'labels': [label.strftime('%Y-%m-%d') for label in labels],
-            'counts': counts,
-        })
+    chart_data = {
+        'labels': ['Total'],  # Only one label for the stacked column
+        'datasets': [{
+            'label': tag,
+            'data': [value],
+            'backgroundColor': f'rgba({i*50}, {i*20}, {i*100}, 0.6)',  # Different color for each tag
+            'borderColor': f'rgba({i*50}, {i*20}, {i*100}, 1)',
+            'borderWidth': 1
+        } for i, (tag, value) in enumerate(data.items())]
+    }
 
-    return render(request, 'entry_charts.html', {'charts_data': charts_data})
+    return render(request, 'entry_charts.html', {'chart_data': chart_data})
