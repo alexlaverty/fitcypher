@@ -27,6 +27,19 @@
 .complete-btn:hover {
     background-color: #45a049;
 }
+.skip-btn {
+    padding: 10px 20px;
+    background-color: #ff9800; /* orange color */
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 20px;
+}
+
+.skip-btn:hover {
+    background-color: #e68a00; /* darker orange color */
+}
 {% endblock %}
 
 {% block content %}
@@ -36,8 +49,10 @@
         <div id="exerciseContainer">
             <div class="counter">Exercise: <span id="currentCount">1</span> of <span id="totalCount">0</span></div>
             <div class="exercise-title" id="exerciseTitle"></div>
+            <div class="counter">Time Elapsed: <span id="timeElapsed">0 seconds</span></div>
             <div id="player"></div>
             <button class="complete-btn" id="completeBtn">Complete Exercise</button>
+            <button class="skip-btn" id="skipBtn">Skip Exercise</button>
         </div>
     {% else %}
         <h1>Please specify a YouTube channel</h1>
@@ -48,6 +63,21 @@
 let videos = {{ videos|safe }};
 let currentIndex = 0;
 let player;
+
+
+let timeElapsed = 0;
+let intervalId;
+
+function startTimer() {
+    intervalId = setInterval(function() {
+        timeElapsed++;
+        document.getElementById('timeElapsed').textContent = `${timeElapsed} seconds`;
+    }, 1000);
+}
+
+function stopTimer() {
+    clearInterval(intervalId);
+}
 
 function initializeYouTubePlayer() {
     if (!videos.length) return;
@@ -90,6 +120,8 @@ function createPlayer() {
     });
     
     updateExerciseTitle();
+    startTimer();
+
 }
 
 function onPlayerReady(event) {
@@ -111,6 +143,8 @@ function loadNextVideo() {
         alert('Workout complete! Great job!');
         // Optionally redirect to a summary page or reload with new exercises
     }
+    startTimer();
+
 }
 
 document.getElementById('completeBtn').addEventListener('click', function() {
@@ -126,15 +160,23 @@ document.getElementById('completeBtn').addEventListener('click', function() {
         body: new URLSearchParams({
             'video_id': video.id,
             'video_title': video.title,
-            'video_duration': video.duration
+            'video_duration': timeElapsed
         })
     })
     .then(response => response.json())
     .then(data => {
         if (data.status === 'success') {
+            stopTimer();
+            timeElapsed = 0;
             loadNextVideo();
         }
     });
+});
+
+document.getElementById('skipBtn').addEventListener('click', function() {
+    stopTimer();
+    timeElapsed = 0;
+    loadNextVideo();
 });
 
 // Helper function to get CSRF token
