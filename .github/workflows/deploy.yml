@@ -30,7 +30,7 @@ jobs:
         PA_USERNAME: ${{ secrets.PYTHONANYWHERE_USERNAME }}
       run: |
         sshpass -p "$PA_PASSWORD" ssh -o "StrictHostKeyChecking=no" ${PA_USERNAME}@ssh.pythonanywhere.com << 'EOF'
-          cd ~/myproject
+          cd ~/fitcypher
           git pull origin main
           source virtualenv/bin/activate
           pip install -r requirements.txt
