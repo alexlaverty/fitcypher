@@ -169,23 +169,33 @@ function createPlayer() {
     if (!videos.length) return;
 
     player = new YT.Player('player', {
-        height: '100%', // Let CSS handle the height
-        width: '100%',  // Let CSS handle the width
+        height: '100%',
+        width: '100%',
         videoId: videos[currentIndex].id,
         playerVars: {
-            'autoplay': 1,  // Enable autoplay
-            'mute': 1,      // Mute the video
+            'autoplay': 1,
+            'mute': 1,
             'controls': 1,
-            'loop': 1,      // Enable looping
-            'playlist': videos[currentIndex].id // Add the video ID as the playlist
+            'loop': 1,
+            'playlist': videos[currentIndex].id,
+            'playsinline': 1
         },
         events: {
-            'onReady': onPlayerReady
+            'onReady': onPlayerReady,
+            'onStateChange': onPlayerStateChange
         }
     });
 
     updateExerciseTitle();
     startTimer();
+}
+
+function onPlayerStateChange(event) {
+    // When video ends (state = 0)
+    if (event.data === YT.PlayerState.ENDED) {
+        // Restart the same video
+        player.playVideo();
+    }
 }
 
 function onPlayerReady(event) {
