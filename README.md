@@ -27,6 +27,18 @@ docker run -p 8000:8000 fitcypher
 
 ## REST API 
 
+### GET
+
+Export your entries via the rest API
+
+```
+curl -X GET http://127.0.0.1:8000/api/entries/ \
+-H "Content-Type: application/json" \
+-u your_username:your_password
+```
+### POST
+
+Create entries via the rest api
 ```
 curl -X POST http://127.0.0.1:8000/api/entries/ \
 -H "Content-Type: application/json" \
@@ -39,6 +51,58 @@ curl -X POST http://127.0.0.1:8000/api/entries/ \
     "tags": "morning",
     "source": "fitcypher"
 }'
+```
+
+### POST
+
+Create entries via the rest api
+```
+curl -X POST http://127.0.0.1:8000/api/entries/ \
+-H "Content-Type: application/json" \
+-u your_username:your_password \
+-d '{
+    "date": "2023-10-15T12:00:00Z",
+    "tracking": "weight",
+    "numerical_value": 70.5,
+    "notes": "After breakfast",
+    "tags": "morning",
+    "source": "fitcypher"
+}'
+```
+
+or post multiple entries with batch post :
+
+```
+curl -X POST http://127.0.0.1:8000/api/entries/batch/ \
+-H "Content-Type: application/json" \
+-u your_username:your_password \
+-d '[{
+    "id": 1,
+    "user": {
+        "id": 1,
+        "username": "alex"
+    },
+    "date": "2023-10-15T12:00:00Z",
+    "tracking": "food",
+    "string_value": "Banana and Porridge",
+    "numerical_value": null,
+    "notes": "",
+    "tags": "",
+    "source": "fitcypher"
+}, {
+    "id": 2,
+    "user": {
+        "id": 1,
+        "username": "alex"
+    },
+    "date": "2025-02-02T04:56:52.968347Z",
+    "tracking": "exercise",
+    "string_value": "raised arm circles",
+    "numerical_value": "8.00",
+    "notes": "Video ID: g3oaRLbo-yw",
+    "tags": "darebee",
+    "source": "youtube"
+}]'
 ```
 
 ## Extract Youtube Channel Video ID's to JSON 

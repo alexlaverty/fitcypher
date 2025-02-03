@@ -79,7 +79,7 @@ def entry_list(request):
                 summarized_entry = type('SummarizedEntry', (), {
                     'tracking': 'exercise',
                     'string_value': ex['string_value'],
-                    'numerical_value': ex['total_count'] / 60,  # Convert seconds to minutes
+                    'numerical_value': ex['total_count'],  # Convert seconds to minutes
                     'date': exercise_entries.filter(string_value=ex['string_value']).first().date,
                     'tags': None,
                     'notes': None,
@@ -238,23 +238,28 @@ def entry_charts(request):
     # Get unique tags
     tags = set()
     for entry in exercise_entries:
-        tags.update(entry.tags.split(', '))
+        if entry.tags:  # Check if tags exist
+            tags.update(tag.strip() for tag in entry.tags.split(','))
 
-    # Group entries by tags and sum the numerical value
+    # Group entries by tags and sum the numerical value (converting to minutes)
     data = {}
     for tag in tags:
         data[tag] = 0
         for entry in exercise_entries:
-            if tag in entry.tags:
-                data[tag] += float(entry.numerical_value)
+            if entry.tags and tag in entry.tags:
+                # Convert seconds to minutes by dividing by 60
+                # Use float() to handle string values and round to 2 decimal places
+                if entry.numerical_value:
+                    minutes = int(entry.numerical_value) / 60
+                    data[tag] += round(minutes, 2)
 
     # Prepare the data for the template
     chart_data = {
-        'labels': ['Total'],  # Only one label for the stacked column
+        'labels': ['Total Exercise Time'],  # More descriptive label
         'datasets': [{
             'label': tag,
             'data': [value],
-            'backgroundColor': f'rgba({i*50}, {i*20}, {i*100}, 0.6)',  # Different color for each tag
+            'backgroundColor': f'rgba({i*50}, {i*20}, {i*100}, 0.6)',
             'borderColor': f'rgba({i*50}, {i*20}, {i*100}, 1)',
             'borderWidth': 1
         } for i, (tag, value) in enumerate(data.items())]

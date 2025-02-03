@@ -8,7 +8,7 @@
 {% block style %}
 .chart-container {
     width: 100%;
-    height: 400px; /* Adjust chart height as needed */
+    height: 400px;
 }
 {% endblock %}
 
@@ -29,17 +29,33 @@
                 maintainAspectRatio: false,
                 scales: {
                     x: {
-                        stacked: true,  // Enable stacking for the x-axis
+                        stacked: true,
                     },
                     y: {
-                        stacked: true,  // Enable stacking for the y-axis
-                        beginAtZero: true
+                        stacked: true,
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Duration (minutes)'  // Added y-axis label
+                        },
+                        ticks: {
+                            callback: function(value) {
+                                return value.toFixed(1) + ' min';  // Format y-axis labels
+                            }
+                        }
                     }
                 },
                 plugins: {
                     legend: {
-                        display: true,  // Show legend to differentiate tags
+                        display: true,
                         position: 'top'
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.dataset.label + ': ' + context.raw.toFixed(1) + ' minutes';
+                            }
+                        }
                     }
                 }
             }
