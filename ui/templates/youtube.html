@@ -89,6 +89,14 @@
         width: 100%;
     }
 }
+@media only screen and (max-width: 1370px) {
+    .sidebar {
+      display: none;
+    }
+    .workout-cards {
+      width: 80%;
+    }
+  }
 /* Hide the sidebar on mobile devices */
 @media only screen and (max-width: 845px) {
   .sidebar {
@@ -98,6 +106,7 @@
     width: 50%;
   }
 }
+
 {% endblock %}
 
 {% block content %}
@@ -146,10 +155,10 @@ function stopTimer() {
 
 function initializeYouTubePlayer() {
     if (!videos.length) return;
-    
+
     // Update exercise count
     // document.getElementById('totalCount').textContent = videos.length;
-    
+
     // Load YouTube IFrame API
     if (!window.YT) {
         const tag = document.createElement('script');
@@ -223,7 +232,7 @@ function loadNextVideo() {
 
 document.getElementById('completeBtn').addEventListener('click', function() {
     const video = videos[currentIndex];
-    
+
     // Send completion to server
     fetch('', {
         method: 'POST',
