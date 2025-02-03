@@ -23,7 +23,9 @@
 <div class="workout-cards">
     {% for workout in workouts %}
         <div class="card">
-            <img src="{{ workout.image_url }}" alt="{{ workout.title }}" style="width: 100%; display: block; margin: 0;">
+            <a href="{% url workout.view_name %}?youtube_channel={{ workout.youtube_channel }}">
+                <img src="{{ workout.image_url }}" alt="{{ workout.title }}" style="width: 100%; display: block; margin: 0;">
+            </a>
             <h2>
                 {% if workout.view_name == 'youtube' and workout.youtube_channel %}
                     <a href="{% url workout.view_name %}?youtube_channel={{ workout.youtube_channel }}">{{ workout.title }}</a>

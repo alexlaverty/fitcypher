@@ -134,6 +134,13 @@ def workout_selection(request):
             "view_name": "youtube",
             "youtube_channel": "opex-mobility",
             "image_url": "static/workouts/opex-mobility-logo.jpg"
+        },
+        {
+            "title": "OPEX Core",
+            "description": "Workout to OPEX Core Youtube Video Library",
+            "view_name": "youtube",
+            "youtube_channel": "opex-core",
+            "image_url": "static/workouts/opex-core-logo.png"
         }
     ]
     return render(request, "workouts.html", {"workouts": workouts})
