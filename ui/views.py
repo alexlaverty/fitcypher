@@ -79,7 +79,7 @@ def entry_list(request):
                 summarized_entry = type('SummarizedEntry', (), {
                     'tracking': 'exercise',
                     'string_value': ex['string_value'],
-                    'numerical_value': ex['total_count'],
+                    'numerical_value': ex['total_count'] / 60,  # Convert seconds to minutes
                     'date': exercise_entries.filter(string_value=ex['string_value']).first().date,
                     'tags': None,
                     'notes': None,
