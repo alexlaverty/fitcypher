@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+    <h2>Blood Pressure Tracking</h2>
+    
+    <form method="POST">
+        {% csrf_token %}
+        <label for="systolic">Systolic:</label>
+        <input type="number" name="systolic" required>
+        
+        <label for="diastolic">Diastolic:</label>
+        <input type="number" name="diastolic" required>
+        
+        <button type="submit">Submit</button>
+    </form>
+
+    <canvas id="bpChart"></canvas>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        let ctx = document.getElementById('bpChart').getContext('2d');
+        let chartData = JSON.parse('{{ chart_data|safe }}');
+
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: chartData.labels,
+                datasets: [
+                    {
+                        label: 'Systolic',
+                        borderColor: 'red',
+                        data: chartData.systolic,
+                        fill: false
+                    },
+                    {
+                        label: 'Diastolic',
+                        borderColor: 'blue',
+                        data: chartData.diastolic,
+                        fill: false
+                    }
+                ]
+            }
+        });
+    });
+</script>
+
+
+{% endblock %}

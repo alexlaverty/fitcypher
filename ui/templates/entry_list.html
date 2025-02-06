@@ -41,13 +41,19 @@
         font-size: 0.8rem;
     }
     .time {
-        color: #ffffff;
+        color: #000000;
         font-size: 0.875rem;
     }
     .tracking {
-        color: #ffffff;
+        color: #000000;
         font-size: 0.875rem;
     }
+    /* Define tracking color classes with refined colors */
+    .tracking-exercise { background-color: #4CAF50; }  /* Green */
+    .tracking-food { background-color: #FF9800; }      /* Orange */
+    .tracking-blood_pressure { background-color: #F44336; }  /* Red */
+    .tracking-weight { background-color: #FFC107; }    /* Amber/Yellow */
+    .tracking-default { background-color: #9E9E9E; }    /* Gray */
 </style>
 {% endblock %}
 
@@ -60,7 +66,12 @@
             <div class="card-container">
                 {% for entry in entries %}
                     <div class="card">
-                        <div class="card-header">
+                        <div class="card-header" style="
+                            {% if entry.tracking == 'exercise' %}background-color: #b6e3ff;
+                            {% elif entry.tracking == 'food' %}background-color: MediumSeaGreen;
+                            {% elif entry.tracking == 'blood_pressure' %}background-color: #F44336;
+                            {% elif entry.tracking == 'weight' %}background-color: #FFC107;
+                            {% else %}background-color: #9E9E9E;{% endif %}">
                             <span class="time">{{ entry.date|date:"H:i" }}</span>
                             <span class="tracking">{{ entry.tracking }}</span>
                         </div>

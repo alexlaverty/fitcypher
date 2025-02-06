@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+{% block title %}HeatMap{% endblock %}
+{% block style %}
+    .heatmap-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    .heatmap-table th, .heatmap-table td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: center;
+    }
+    .heatmap-table th {
+        background-color: #f2f2f2;
+    }
+{% endblock %}
+
+{% block content %}
+<table class="heatmap-table">
+    <thead>
+        <tr>
+            <th>Date</th>
+            {% for string_value in string_values_filter %}
+                <th>{{ string_value }}</th>
+            {% endfor %}
+        </tr>
+    </thead>
+    <tbody>
+        {% for date, values in heatmap_data.items %}
+        <tr>
+            <td>{{ date|date:"Y-m-d" }}</td>
+            {% for string_value in string_values_filter %}
+                {% with cell_data=values|get_item:string_value %}
+                    <td style="background-color: {{ cell_data.1 }};">
+                        {% if cell_data.0 is not None %}
+                            {% if string_value == 'sleep' %}
+                                {{ cell_data.0|floatformat:2 }}
+                            {% else %}
+                                {{ cell_data.0|floatformat:0 }}
+                            {% endif %}
+                        {% else %}
+                            N/A
+                        {% endif %}
+                    </td>
+                {% endwith %}
+            {% endfor %}
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

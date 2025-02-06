@@ -109,5 +109,5 @@ curl -X POST http://127.0.0.1:8000/api/entries/batch/ \
 
 ```
 pip install yt-dlp
-yt-dlp --flat-playlist --print "%(id)s,%(title)s,%(duration)s" "https://www.youtube.com/playlist?list=PLz-l7oWFJS0JpFK3d3qSGbMSpcKjZgQI6" 2>/dev/null | awk -F',' '{gsub(/"/, "\\\""); print "{\"id\":\"" $1 "\", \"title\":\"" $2 "\", \"duration\":\"" $3 "\"}"}' | jq -s '.' > opex-mobility.json
+yt-dlp --flat-playlist --print "%(id)s,%(title)s,%(duration)s" "https://www.youtube.com/playlist?list=PLz-l7oWFJS0Lyvvb-m0YzEjAmtcezXCki" 2>/dev/null | awk -F',' '{gsub(/"/, "\\\""); print "{\"id\":\"" $1 "\", \"title\":\"" $2 "\", \"duration\":\"" $3 "\"}"}' | jq -s '.' > opex-core.json
 ```
