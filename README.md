@@ -105,6 +105,17 @@ curl -X POST http://127.0.0.1:8000/api/entries/batch/ \
 }]'
 ```
 
+### POST /api/entries/batch/ from a JSON file
+
+To post multiple entries from a JSON file to the `/api/entries/batch/` endpoint, use the following `curl` command:
+
+```sh
+curl -X POST http://127.0.0.1:8000/api/entries/batch/ \
+-H "Content-Type: application/json" \
+-u your_username:your_password \
+-d @export.json
+```
+
 ## Extract Youtube Channel Video ID's to JSON 
 
 ```

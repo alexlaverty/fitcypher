@@ -247,35 +247,34 @@ def entry_charts(request):
     # Get the logged-in user's exercise entries
     exercise_entries = Entry.objects.filter(user=request.user, tracking='exercise')
 
-    # Get unique tags
-    tags = set()
+    # Group entries by day and sum the numerical value (converting to minutes)
+    daily_data = defaultdict(lambda: defaultdict(float))
     for entry in exercise_entries:
-        if entry.tags:  # Check if tags exist
-            tags.update(tag.strip() for tag in entry.tags.split(','))
-
-    # Group entries by tags and sum the numerical value (converting to minutes)
-    data = {}
-    for tag in tags:
-        data[tag] = 0
-        for entry in exercise_entries:
-            if entry.tags and tag in entry.tags:
-                # Convert seconds to minutes by dividing by 60
-                # Use float() to handle string values and round to 2 decimal places
-                if entry.numerical_value:
-                    minutes = int(entry.numerical_value) / 60
-                    data[tag] += round(minutes, 2)
+        day = entry.date.strftime('%Y-%m-%d')
+        if entry.numerical_value:
+            daily_data[day][entry.tags] += float(entry.numerical_value) / 60  # Convert seconds to minutes
 
     # Prepare the data for the template
     chart_data = {
-        'labels': ['Total Exercise Time'],  # More descriptive label
-        'datasets': [{
-            'label': tag,
-            'data': [value],
-            'backgroundColor': f'rgba({i*50}, {i*20}, {i*100}, 0.6)',
-            'borderColor': f'rgba({i*50}, {i*20}, {i*100}, 1)',
-            'borderWidth': 1
-        } for i, (tag, value) in enumerate(data.items())]
+        'labels': sorted(daily_data.keys()),  # Sorted list of days
+        'datasets': []
     }
+
+    # Collect all unique exercise names
+    exercise_names = set()
+    for day_data in daily_data.values():
+        exercise_names.update(day_data.keys())
+
+    # Create a dataset for each exercise
+    for exercise in exercise_names:
+        dataset = {
+            'label': exercise,
+            'data': [daily_data[day].get(exercise, 0) for day in chart_data['labels']],
+            'backgroundColor': f'rgba({random.randint(0, 255)}, {random.randint(0, 255)}, {random.randint(0, 255)}, 0.6)',
+            'borderColor': f'rgba({random.randint(0, 255)}, {random.randint(0, 255)}, {random.randint(0, 255)}, 1)',
+            'borderWidth': 1
+        }
+        chart_data['datasets'].append(dataset)
 
     return render(request, 'entry_charts.html', {'chart_data': chart_data})
 

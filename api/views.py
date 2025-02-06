@@ -1,17 +1,12 @@
 import json
 from .serializers import EntrySerializer, BatchEntrySerializer
 from core.models import Entry
-from django.contrib.auth.decorators import login_required
 from django.db import transaction
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-from rest_framework import generics
-from rest_framework import status
+from django.utils.timezone import now
+from rest_framework import generics, status, viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from django.utils.timezone import now
-
 
 class EntryList(generics.ListCreateAPIView):
     queryset = Entry.objects.all()
@@ -79,11 +74,10 @@ class BatchEntryImport(APIView):
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+class SubmitEntryView(APIView):
+    permission_classes = [IsAuthenticated]
 
-@csrf_exempt
-@login_required
-def api_submit_entry(request):
-    if request.method == 'POST':
+    def post(self, request):
         try:
             data = json.loads(request.body)
             tracking = data.get('tracking')
@@ -91,7 +85,7 @@ def api_submit_entry(request):
             string_value = data.get('string_value', None)
 
             if not tracking or numerical_value is None:
-                return JsonResponse({'error': 'Tracking and numerical_value are required'}, status=400)
+                return Response({'error': 'Tracking and numerical_value are required'}, status=400)
 
             Entry.objects.create(
                 user=request.user,
@@ -102,25 +96,29 @@ def api_submit_entry(request):
                 source="fitcypher"
             )
 
-            return JsonResponse({'message': 'Entry created successfully'}, status=201)
+            return Response({'message': 'Entry created successfully'}, status=201)
 
         except json.JSONDecodeError:
-            return JsonResponse({'error': 'Invalid JSON'}, status=400)
+            return Response({'error': 'Invalid JSON'}, status=400)
 
-    return JsonResponse({'error': 'Only POST requests allowed'}, status=405)
+class TrackingDataView(APIView):
+    permission_classes = [IsAuthenticated]
 
-@csrf_exempt
-@login_required
-def api_get_tracking_data(request, tracking_type):
-    from collections import defaultdict
-    from django.utils.timezone import localtime
+    def get(self, request, tracking_type):
+        from collections import defaultdict
+        from django.utils.timezone import localtime
 
-    data = defaultdict(list)
-    entries = Entry.objects.filter(user=request.user, tracking=tracking_type).order_by('date')
+        data = defaultdict(list)
+        entries = Entry.objects.filter(user=request.user, tracking=tracking_type).order_by('date')
 
-    for entry in entries:
-        local_date = localtime(entry.date).strftime('%Y-%m-%d')
-        data['labels'].append(local_date)
-        data['values'].append(float(entry.numerical_value) if entry.numerical_value else None)
+        for entry in entries:
+            local_date = localtime(entry.date).strftime('%Y-%m-%d')
+            data['labels'].append(local_date)
+            data['values'].append(float(entry.numerical_value) if entry.numerical_value else None)
 
-    return JsonResponse(data, safe=False)
+        return Response(data)
+
+class EntryViewSet(viewsets.ModelViewSet):
+    queryset = Entry.objects.all()
+    serializer_class = EntrySerializer
+    permission_classes = [IsAuthenticated]
