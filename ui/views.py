@@ -193,7 +193,7 @@ def body_weight_exercises(request):
                 date=timezone.now(),
                 tracking="exercise",
                 string_value=exercise_name.lower(),
-                numerical_value=10, # Hard coded to 10 for now...
+                numerical_value=60, # Hard coded to 60 for now, 10 reps equals 60 seconds or 1 minute...
                 tags="quick",
                 source="fitcypher"
             )
