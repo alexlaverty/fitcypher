@@ -2,9 +2,12 @@ from django.urls import path, include
 from rest_framework import routers
 from . import views
 
+# Create a router and register your viewsets with it.
 router = routers.DefaultRouter()
 
+
 urlpatterns = [
+    path('', include(router.urls)),  # This will include the root API view
     path('entries/', views.EntryList.as_view(), name='api_entries'),
     path('entries/batch/', views.BatchEntryImport.as_view()),
     path('api-auth/', include('rest_framework.urls')),
