@@ -7,6 +7,7 @@ from rest_framework import generics, status, viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
+import requests
 
 class EntryList(generics.ListCreateAPIView):
     queryset = Entry.objects.all()
@@ -122,3 +123,162 @@ class EntryViewSet(viewsets.ModelViewSet):
     queryset = Entry.objects.all()
     serializer_class = EntrySerializer
     permission_classes = [IsAuthenticated]
+
+
+# CARA_ENTRY_TYPE_MAPPING = {
+#     'food': 'diet',
+#     'stool': 'stool',
+#     'workout': 'exercise',
+#     # Add more mappings if needed
+# }
+
+# def get_bristol_text(numeral):
+#     match numeral:
+#         case 0:
+#             return "no_stool"
+#         case 14:
+#             return "type1"
+#         case 28:
+#             return "type2"
+#         case 42:
+#             return "type3"
+#         case 57:
+#             return "type4"
+#         case 71:
+#             return "type5"
+#         case 85:
+#             return "type6"
+#         case 100:
+#             return "type7"
+
+
+# # Download Cara Images
+
+# image_folder = Path('ui', 'static', 'diet')
+
+
+# def check_file_exists(file_path):
+#     if os.path.exists(file_path):
+#         print(f"The file '{file_path}' exists.")
+#         return True
+#     else:
+#         print(f"The file '{file_path}' does not exist.")
+#         return False
+
+# def retrieve_image_id(url, headers, entry):
+#     if entry["type"]=="food":
+#         for mealItem in entry["mealItems"]:
+#             if mealItem["hasImage"]:
+#                 print(mealItem["realmIdString"])
+#                 if not check_file_exists(Path(image_folder, mealItem["realmIdString"] + ".jpg")):
+#                     download_image(url, headers, mealItem["realmIdString"])
+
+# def download_image(url, headers, img_id):
+#     url_image = "https://web.gohidoc.com/api/dashboard/me/images/"
+#     food_img_file = Path(image_folder, img_id + ".jpg")
+#     print(f"Attempting image download : {img_id}")
+#     img_url_path = url_image + img_id + "/"
+#     img_request = requests.get(img_url_path, headers=headers)
+#     if img_request.status_code == 200:
+#         img_data = img_request.content
+#         with open(food_img_file, 'wb') as handler:
+#             handler.write(img_data)
+#         return True
+#     else:
+#         img_txt = Path(image_folder, img_id + ".txt")
+#         file = open(img_txt,"w")
+#         file.write("No image downloaded")
+#         file.close()
+#         return False
+
+# @transaction.atomic
+# def sync_cara_entries(request):
+#     print("--- Syncing Cara Entries ---")
+
+#     if not image_folder.exists():
+#         image_folder.mkdir(parents=True, exist_ok=True)
+
+#     user = request.user
+#     cara_api_token = user.cara_api_token
+
+#     if not cara_api_token:
+#         print("No Cara token set in User Profile, skipping...")
+#         # Handle case where user does not have a Cara API token
+#         # You can redirect them to a page to input their token
+#         return redirect('profile')
+
+#     # Calculate start date and end date
+#     end_date = datetime.date.today().strftime('%Y-%m-%d')
+#     start_date = (datetime.date.today() - datetime.timedelta(days=180)).strftime('%Y-%m-%d')
+
+#     # Make REST call to fetch Cara entries
+#     url = f"https://web.gohidoc.com/api/dashboard/me/data-points/?start={start_date}&end={end_date}&limit=100&offset=0"
+#     headers = {"x-token": cara_api_token}
+
+#     try:
+#         response = requests.get(url, headers=headers)
+#         response.raise_for_status()  # Raise an error for unsuccessful status codes
+#         data = response.json().get('results', [])
+#         #sprint(json.dumps(data, indent=4))
+
+#         # Save Cara entries into Entry model
+#         for entry in data:
+#             entry_type = entry['type']
+#             group_name = CARA_ENTRY_TYPE_MAPPING.get(entry_type, entry_type)  # Use entry type if no mapping exists
+
+#             # Get or create the ChecklistGroup instance
+#             group, created = ChecklistGroup.objects.get_or_create(name=group_name.lower())
+#             additional_information = ""
+#             # Determine string_value based on entry type
+#             if entry_type == "food":
+#                 # Extract meal item name from mealItems
+#                 meal_items = entry.get('mealItems', [])
+#                 if meal_items:
+#                     string_value = meal_items[0].get('name')
+#                     for mealItem in entry["mealItems"]:
+#                         if mealItem["hasImage"]:
+#                             print(mealItem["realmIdString"])
+#                             additional_information = mealItem["realmIdString"]
+#                 else:
+#                     string_value = None
+#             elif entry_type == "stool":
+#                 # Get Bristol text based on numerical value
+#                 bristol_numeral = entry.get('value')
+#                 string_value = get_bristol_text(bristol_numeral)
+#             elif entry_type == "workout":
+#                 # If the type is workout and text is null
+#                 if entry.get('text') is None:
+#                     # Set string_value to tags if tags is not None, otherwise set it to "workout"
+#                     string_value = entry.get('tags') or "workout"
+#                 else:
+#                     # If text is not null, use it as string_value
+#                     string_value = entry.get('text')
+#             else:
+#                 string_value = entry.get('text')
+
+#             try:
+#                 # Try to create the entry, but handle IntegrityError if it already exists
+#                 with transaction.atomic():
+#                     Entry.objects.create(
+#                         user=user,
+#                         date=entry['timestampEntry'],  # Use the timestampEntry from Cara's response
+#                         string_value = string_value.lower() if string_value is not None else None,
+#                         numerical_value=entry.get('value'),
+#                         tags=entry.get('tags'),
+#                         additional_information=additional_information,
+#                         group=group,
+#                         source="cara"
+#                         # Add any other fields from the Cara response as needed
+#                     )
+#             except IntegrityError:
+#                 # Handle case where the entry already exists (duplicate entry)
+#                 pass
+
+#         download_cara_meal_images = [retrieve_image_id(url, headers, x) for x in data]
+
+#         # Redirect or render a page indicating successful sync
+#         return redirect('profile')  # Redirect to the user's profile page
+#     except requests.exceptions.RequestException as e:
+#         # Handle error cases
+#         print("Error:", e)
+#         return redirect('error_page')  # Redirect to an error page

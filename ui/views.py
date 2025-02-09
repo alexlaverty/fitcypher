@@ -3,7 +3,7 @@ import logging
 import os 
 import random
 from collections import defaultdict
-from core.models import Entry
+from core.models import Entry, UserProfile
 from datetime import datetime
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
@@ -16,7 +16,8 @@ from django.utils.timezone import now
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models.functions import TruncDate
 from django.db.models import Max, Min, Q, Sum, Avg, Count
-
+from django.contrib import messages
+from .forms import UserProfileForm
 
 # Set up logging
 logger = logging.getLogger(__name__)
@@ -534,3 +535,23 @@ def heatmap(request):
     }
 
     return render(request, 'heatmap.html', context)
+
+
+@login_required
+def profile_view(request):
+    user_profile = request.user.profile
+
+    if request.method == 'POST':
+        form = UserProfileForm(request.POST, instance=user_profile)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Profile updated successfully')
+            return redirect('profile')
+    else:
+        form = UserProfileForm(instance=user_profile)
+
+    context = {
+        'form': form,
+        'profile': user_profile
+    }
+    return render(request, 'profile.html', context)

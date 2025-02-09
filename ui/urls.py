@@ -12,6 +12,7 @@ urlpatterns = [
     path('weight/', views.weight_tracking_view, name='weight_tracking_view'),
     path('dashboard/<str:tracking_type>/', views.health_dashboard, name='health_dashboard'),
     path('heatmap/', views.heatmap, name='heatmap'),
+    path('profile/', views.profile_view, name='profile'),
 ]
 
 
